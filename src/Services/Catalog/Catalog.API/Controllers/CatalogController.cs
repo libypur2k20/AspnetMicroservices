@@ -37,7 +37,7 @@ namespace Catalog.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<Product>> GetProductById(string id)
         {
-            var product = await _repository.GetProductByName(id);
+            var product = await _repository.GetProduct(id);
             if (product == null)
             {
                 _logger.LogError($"Product with id:{id}, not found.");
@@ -45,6 +45,16 @@ namespace Catalog.API.Controllers
             }
             return Ok(product);
         }
+
+        [Route("[action]/{name}", Name = "GetProductByName")]
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Product>),(int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductByName(string name)
+        {
+            var products = await _repository.GetProductByName(name);
+            return Ok(products);
+        }
+
 
         [Route("[action]/{category}", Name = "GetProductByCategory")]
         [HttpGet]
@@ -66,7 +76,7 @@ namespace Catalog.API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateProduct([FromBody] Product product)
         {
